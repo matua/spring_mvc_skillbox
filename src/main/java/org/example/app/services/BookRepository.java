@@ -5,7 +5,6 @@ import org.example.web.dto.Book;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -55,6 +54,8 @@ public class BookRepository implements ProjectRepository<Book> {
     @Override
     public boolean removeItemByFilter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
 
+        List<Book> toRemove = new ArrayList<>();
+
         if (regAuthorToRemove.isEmpty()) {
             regAuthorToRemove = ".*";
         }
@@ -65,20 +66,18 @@ public class BookRepository implements ProjectRepository<Book> {
             regSizeToRemove = ".*";
         }
 
-        boolean removed = false;
-
-        Iterator<Book> iterator = repo.iterator();
-        Book book = iterator.next();
-        while (iterator.hasNext()) {
+        boolean remove = false;
+        for (Book book : repo) {
             if (Pattern.matches(regAuthorToRemove, book.getAuthor()) &&
                     Pattern.matches(regTitleToRemove, book.getTitle()) &&
                     Pattern.matches(regSizeToRemove, book.getSize().toString())) {
-                iterator.remove();
-                removed = true;
+                toRemove.add(book);
+                remove = true;
             }
         }
-        logger.info("filter removal book completed: " + book);
 
-        return removed;
+        repo.removeAll(toRemove);
+//        logger.info("filter removal book completed: " + book);
+        return remove;
     }
 }
