@@ -31,4 +31,8 @@ public class BookService {
     public boolean removeBookByFilter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
         return bookRepo.removeItemByFilter(regAuthorToRemove, regTitleToRemove, regSizeToRemove);
     }
+
+    public List<Book> filter(String regAuthorToFilter, String regTitleToFilter, String regSizeToFilter) {
+        return bookRepo.filter(regAuthorToFilter, regTitleToFilter, regSizeToFilter);
+    }
 }

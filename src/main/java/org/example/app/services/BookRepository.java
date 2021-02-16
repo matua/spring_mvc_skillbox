@@ -80,4 +80,31 @@ public class BookRepository implements ProjectRepository<Book> {
 //        logger.info("filter removal book completed: " + book);
         return remove;
     }
+
+    @Override
+    public List<Book> filter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
+        List<Book> filteredRepo = new ArrayList<>();
+
+
+        if (regAuthorToRemove.isEmpty()) {
+            regAuthorToRemove = ".*";
+        }
+        if (regTitleToRemove.isEmpty()) {
+            regTitleToRemove = ".*";
+        }
+        if (regSizeToRemove.isEmpty()) {
+            regSizeToRemove = ".*";
+        }
+
+        for (Book book : repo) {
+            if (Pattern.matches(regAuthorToRemove, book.getAuthor()) &&
+                    Pattern.matches(regTitleToRemove, book.getTitle()) &&
+                    Pattern.matches(regSizeToRemove, book.getSize().toString())) {
+                filteredRepo.add(book);
+            }
+        }
+
+        logger.info("filtering of books completed");
+        return filteredRepo;
+    }
 }

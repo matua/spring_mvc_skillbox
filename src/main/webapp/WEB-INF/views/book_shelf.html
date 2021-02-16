@@ -12,12 +12,12 @@
         }
 
         #books {
-            width: 50%;
             border-collapse: collapse;
         }
 
         table {
             margin: 25px;
+            width: 100%
         }
 
         th {
@@ -82,6 +82,24 @@
         </table>
     </form>
 
+    <form method="post" th:action="@{/books/filter}">
+        <table>
+            <tr>
+                <td>
+                    <input placeholder="author" th:name="regAuthorToFilter" type="text">
+                </td>
+                <td>
+                    <input placeholder="title" th:name="regTitleToFilter" type="text">
+                </td>
+                <td>
+                    <input placeholder="size" th:name="regSizeToFilter" type="text">
+                </td>
+                <td>
+                    <input type="submit" value="filter">
+                </td>
+            </tr>
+        </table>
+    </form>
 
     <table id="books">
         <tr>
@@ -96,6 +114,7 @@
             <td th:text="${book.title}"></td>
             <td th:text="${book.size}"></td>
         </tr>
+        <a th:href="@{'/books/shelf'}">Reset Filter</a>
     </table>
     <a th:href="@{'/login'}">Log out</a>
 </div>

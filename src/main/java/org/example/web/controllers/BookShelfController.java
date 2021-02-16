@@ -52,4 +52,15 @@ public class BookShelfController {
         bookService.removeBookByFilter(regAuthorToRemove, regTitleToRemove, regSizeToRemove);
         return "redirect:/books/shelf";
     }
+
+    @PostMapping("/filter")
+    public String filter(
+            Model model,
+            @RequestParam String regAuthorToFilter,
+            @RequestParam String regTitleToFilter,
+            @RequestParam String regSizeToFilter) {
+        model.addAttribute("book", new Book());
+        model.addAttribute("bookList", bookService.filter(regAuthorToFilter, regTitleToFilter, regSizeToFilter));
+        return "book_shelf";
+    }
 }
