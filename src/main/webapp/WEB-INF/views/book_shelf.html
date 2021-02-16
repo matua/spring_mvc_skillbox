@@ -63,6 +63,25 @@
         </table>
     </form>
 
+    <form method="post" th:action="@{/books/removeByFilter}">
+        <table>
+            <tr>
+                <td>
+                    <input placeholder="author" th:name="regAuthorToRemove" type="text">
+                </td>
+                <td>
+                    <input placeholder="title" th:name="regTitleToRemove" type="text">
+                </td>
+                <td>
+                    <input placeholder="size" th:name="regSizeToRemove" type="text">
+                </td>
+                <td>
+                    <input type="submit" value="remove">
+                </td>
+            </tr>
+        </table>
+    </form>
+
 
     <table id="books">
         <tr>

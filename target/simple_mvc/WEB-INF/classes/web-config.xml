@@ -49,6 +49,7 @@
         <!-- Cache страниц по-умолчанию имеет значение true. Установите в false, если хотите -->
         <!-- чтобы шаблоны автоматически обновлялись при их изменении.                       -->
         <property name="cacheable" value="true"/>
+        <property name="characterEncoding" value="UTF-8"/>
     </bean>
 
     <!--    <mvc:view-controller path="/books/shelf" view-name="book_shelf"/>-->

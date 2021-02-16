@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping(value = "/books")
 public class BookShelfController {
 
-    private Logger logger = Logger.getLogger(BookShelfController.class);
-    private BookService bookService;
+    private final Logger logger = Logger.getLogger(BookShelfController.class);
+    private final BookService bookService;
 
     @Autowired
     public BookShelfController(BookService bookService) {
@@ -41,6 +41,15 @@ public class BookShelfController {
     @PostMapping("/remove")
     public String removeBook(@RequestParam(value = "bookIdToRemove") Integer bookIdToRemove) {
         bookService.removeBookById(bookIdToRemove);
+        return "redirect:/books/shelf";
+    }
+
+    @PostMapping("/removeByFilter")
+    public String removeBookByFilter(
+            @RequestParam String regAuthorToRemove,
+            @RequestParam String regTitleToRemove,
+            @RequestParam String regSizeToRemove) {
+        bookService.removeBookByFilter(regAuthorToRemove, regTitleToRemove, regSizeToRemove);
         return "redirect:/books/shelf";
     }
 }

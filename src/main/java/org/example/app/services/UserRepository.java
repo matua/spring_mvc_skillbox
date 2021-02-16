@@ -12,6 +12,10 @@ public class UserRepository implements ProjectRepository<User> {
     private final Logger logger = Logger.getLogger(UserRepository.class);
     private final List<User> repo = new ArrayList<>();
 
+    {
+        repo.add(new User(1, "admin", "admin"));
+    }
+
     @Override
     public List<User> retreiveAll() {
         return new ArrayList<>(repo);
@@ -34,6 +38,11 @@ public class UserRepository implements ProjectRepository<User> {
                 return repo.remove(user);
             }
         }
+        return false;
+    }
+
+    @Override
+    public boolean removeItemByFilter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
         return false;
     }
 }

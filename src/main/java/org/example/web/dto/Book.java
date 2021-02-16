@@ -6,6 +6,16 @@ public class Book {
     private String title;
     private Integer size;
 
+    public Book() {
+    }
+
+    public Book(Integer id, String author, String title, Integer size) {
+        this.id = id;
+        this.author = author;
+        this.title = title;
+        this.size = size;
+    }
+
     public Integer getId() {
         return id;
     }
