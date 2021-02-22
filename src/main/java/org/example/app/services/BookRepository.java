@@ -2,6 +2,9 @@ package org.example.app.services;
 
 import org.apache.log4j.Logger;
 import org.example.web.dto.Book;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -9,10 +12,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Repository
-public class BookRepository implements ProjectRepository<Book> {
+public class BookRepository implements ProjectRepository<Book>, ApplicationContextAware {
 
     private final Logger logger = Logger.getLogger(BookRepository.class);
     private final List<Book> repo = new ArrayList<>();
+    private ApplicationContext context;
 
     {
         repo.add(new Book("3849287", "Robert Carmen", "Spoken English: Flourish Your Language", 225));
@@ -34,9 +38,11 @@ public class BookRepository implements ProjectRepository<Book> {
     @Override
     public void store(Book book) {
         if (!book.getAuthor().isEmpty() || !book.getTitle().isEmpty() || book.getSize() != null) {
-            book.setId(String.valueOf(book.hashCode()));
+            book.setId(context.getBean(IdProvider.class).provideId(book));
             logger.info("store new book: " + book);
             repo.add(book);
+        } else {
+            logger.info("at least one field must NOT be empty" + book);
         }
     }
 
@@ -106,5 +112,10 @@ public class BookRepository implements ProjectRepository<Book> {
 
         logger.info("filtering of books completed");
         return filteredRepo;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.context = applicationContext;
     }
 }

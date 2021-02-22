@@ -42,22 +42,27 @@
                 </td>
                 <td>
                     <input type="text" placeholder="size (pages)" th:field="*{size}">
+
                 </td>
                 <td>
                     <input type="submit" value="save">
                 </td>
+                <td th:if="${#fields.hasErrors()}">field value must be digit and less than 4 signs</td>
             </tr>
         </table>
     </form>
 
-    <form method="post" th:action="@{/books/remove}">
+    <form method="post" th:action="@{/books/remove}" th:object="${bookIdToRemove}">
         <table>
             <tr>
                 <td>
-                    <input type="text" placeholder="id number" th:name="bookIdToRemove">
+                    <input placeholder="id number" th:field="*{id}" type="text">
                 </td>
                 <td>
                     <input type="submit" value="Remove">
+                </td>
+                <td th:if="${#fields.hasErrors()}">
+                    <p>Wrong id or not found</p>
                 </td>
             </tr>
         </table>
