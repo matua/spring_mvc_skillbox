@@ -13,7 +13,7 @@ public class UserRepository implements ProjectRepository<User> {
     private final List<User> repo = new ArrayList<>();
 
     {
-        repo.add(new User(1, "admin", "admin"));
+        repo.add(new User("1", "admin", "admin"));
     }
 
     @Override
@@ -25,13 +25,13 @@ public class UserRepository implements ProjectRepository<User> {
     public void store(User user) {
         if (!user.getUsername().isEmpty() || !user.getPassword().isEmpty()) {
             logger.info("store new user: " + user);
-            user.setId(user.hashCode());
+            user.setId(String.valueOf(user.hashCode()));
             repo.add(user);
         }
     }
 
     @Override
-    public boolean removeItemById(Integer userIdToRemove) {
+    public boolean removeItemById(String userIdToRemove) {
         for (User user : retreiveAll()) {
             if (user.getId().equals(userIdToRemove)) {
                 logger.info("remove user completed: " + user);

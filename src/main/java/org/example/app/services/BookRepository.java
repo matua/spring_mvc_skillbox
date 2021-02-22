@@ -15,14 +15,14 @@ public class BookRepository implements ProjectRepository<Book> {
     private final List<Book> repo = new ArrayList<>();
 
     {
-        repo.add(new Book(3849287, "Robert Carmen", "Spoken English: Flourish Your Language", 225));
-        repo.add(new Book(3672634, "Robert Carmen", "Some interesting book", 345));
-        repo.add(new Book(9238748, "Robert Carmen", "Some good and wondreful book", 500));
-        repo.add(new Book(4728374, "Jonathan Matua", "The book of my son", 100));
-        repo.add(new Book(5957873, "Jonathan Matua", "The book of my son 2", 225));
-        repo.add(new Book(7498374, "Jonathan Matua", "Readings", 110));
-        repo.add(new Book(2387463, "Jane Herberth", "Spoken English: Flourish Your Language", 231));
-        repo.add(new Book(2349873, "Todeush Kostyushko", "The relevance of anthropological research", 1201));
+        repo.add(new Book("3849287", "Robert Carmen", "Spoken English: Flourish Your Language", 225));
+        repo.add(new Book("3672634", "Robert Carmen", "Some interesting book", 345));
+        repo.add(new Book("9238748", "Robert Carmen", "Some good and wondreful book", 500));
+        repo.add(new Book("4728374", "Jonathan Matua", "The book of my son", 100));
+        repo.add(new Book("5957873", "Jonathan Matua", "The book of my son 2", 225));
+        repo.add(new Book("7498374", "Jonathan Matua", "Readings", 110));
+        repo.add(new Book("2387463", "Jane Herberth", "Spoken English: Flourish Your Language", 231));
+        repo.add(new Book("2349873", "Todeush Kostyushko", "The relevance of anthropological research", 1201));
 
     }
 
@@ -34,14 +34,14 @@ public class BookRepository implements ProjectRepository<Book> {
     @Override
     public void store(Book book) {
         if (!book.getAuthor().isEmpty() || !book.getTitle().isEmpty() || book.getSize() != null) {
-            book.setId(book.hashCode());
+            book.setId(String.valueOf(book.hashCode()));
             logger.info("store new book: " + book);
             repo.add(book);
         }
     }
 
     @Override
-    public boolean removeItemById(Integer bookIdToRemove) {
+    public boolean removeItemById(String bookIdToRemove) {
         for (Book book : retreiveAll()) {
             if (book.getId().equals(bookIdToRemove)) {
                 logger.info("remove book completed: " + book);
