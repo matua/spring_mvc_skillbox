@@ -27,6 +27,10 @@
         th, td {
             border-bottom: 1px solid #ddd;
         }
+
+        td.error {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -47,7 +51,7 @@
                 <td>
                     <input type="submit" value="save">
                 </td>
-                <td th:if="${#fields.hasErrors()}">field value must be digit and less than 4 signs</td>
+                <td class="error" th:if="${#fields.hasErrors()}">field value must be digit and less than 4 signs</td>
             </tr>
         </table>
     </form>
@@ -61,7 +65,7 @@
                 <td>
                     <input type="submit" value="Remove">
                 </td>
-                <td th:if="${#fields.hasErrors()}">
+                <td class="error" th:if="${#fields.hasErrors()}">
                     <p>Wrong id or not found</p>
                 </td>
             </tr>
