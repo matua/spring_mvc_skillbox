@@ -24,7 +24,7 @@ public class UserService {
         userRepo.store(user);
     }
 
-    public boolean removeUserById(String userIdToRemove) {
+    public boolean removeUserById(Integer userIdToRemove) {
         return userRepo.removeItemById(userIdToRemove);
     }
 

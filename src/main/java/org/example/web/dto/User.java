@@ -1,24 +1,24 @@
 package org.example.web.dto;
 
 public class User {
-    private String id;
+    private Integer id;
     private String username;
     private String password;
 
     public User() {
     }
 
-    public User(String id, String username, String password) {
+    public User(Integer id, String username, String password) {
         this.id = id;
         this.username = username;
         this.password = password;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

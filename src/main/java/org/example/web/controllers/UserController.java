@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping("/remove")
-    public String removeUser(@RequestParam(value = "userIdToRemove") String userIdToRemove) {
+    public String removeUser(@RequestParam(value = "userIdToRemove") Integer userIdToRemove) {
         userService.removeUserById(userIdToRemove);
         return "redirect:/users";
     }
