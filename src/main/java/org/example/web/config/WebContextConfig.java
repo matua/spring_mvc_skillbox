@@ -11,7 +11,7 @@ import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 @Configuration
-@ComponentScan(basePackages = "org.example.web") //<context:component-scan base-package="org.example.web"/>
+@ComponentScan(basePackages = "org.example.*") //<context:component-scan base-package="org.example.web"/>
 @EnableWebMvc //<mvc:annotation-driven/
 public class WebContextConfig implements WebMvcConfigurer {
     @Override
