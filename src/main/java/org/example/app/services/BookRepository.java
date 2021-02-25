@@ -6,11 +6,13 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +60,7 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
         parameterSource.addValue("author", book.getAuthor());
         parameterSource.addValue("title", book.getTitle());
         parameterSource.addValue("size", book.getSize());
-        jdbcTemplate.update("INSERT INTO BOOKS(author, title,size) VALUES(:author, :title, :size)create table BOOKS(	author int,	title int,	size int);", parameterSource);
+        jdbcTemplate.update("INSERT INTO BOOKS(author, title,size) VALUES(:author, :title, :size)", parameterSource);
         logger.info("store new book: " + book);
     }
 
@@ -103,30 +105,39 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
 
     @Override
     public List<Book> filter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
-        List<Book> filteredRepo = new ArrayList<>();
-
+        logger.info("filtering of books completed");
+        Integer regSizeToRemoveToInt = null;
 
         if (regAuthorToRemove.isEmpty()) {
-            regAuthorToRemove = ".*";
+            regAuthorToRemove = "%";
         }
         if (regTitleToRemove.isEmpty()) {
-            regTitleToRemove = ".*";
+            regTitleToRemove = "%";
         }
         if (regSizeToRemove.isEmpty()) {
-            regSizeToRemove = ".*";
+        } else {
+            regSizeToRemoveToInt = Integer.parseInt(regSizeToRemove);
         }
 
-//        for (Book book : repo) {
-//            if (Pattern.matches(regAuthorToRemove, book.getAuthor()) &&
-//                    Pattern.matches(regTitleToRemove, book.getTitle()) &&
-//                    Pattern.matches(regSizeToRemove, book.getSize().toString())) {
-//                filteredRepo.add(book);
-//            }
-//        }
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("author", regAuthorToRemove);
+        parameterSource.addValue("title", regTitleToRemove);
+        parameterSource.addValue("size", regSizeToRemoveToInt);
 
-        logger.info("filtering of books completed");
-        return filteredRepo;
+        return jdbcTemplate.query("SELECT * FROM BOOKS" +
+                        " WHERE AUTHOR LIKE :author OR TITLE LIKE :title OR SIZE LIKE :size",
+                parameterSource, new RowMapper<Book>() {
+                    @Override
+                    public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        Book book = new Book();
+                        book.setAuthor((rs.getString("author")));
+                        book.setTitle((rs.getString("title")));
+                        book.setSize((rs.getInt("size")));
+                        return book;
+                    }
+                });
     }
+
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
