@@ -6,13 +6,11 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,15 +124,12 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
 
         return jdbcTemplate.query("SELECT * FROM BOOKS" +
                         " WHERE AUTHOR LIKE :author OR TITLE LIKE :title OR SIZE LIKE :size",
-                parameterSource, new RowMapper<Book>() {
-                    @Override
-                    public Book mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        Book book = new Book();
-                        book.setAuthor((rs.getString("author")));
-                        book.setTitle((rs.getString("title")));
-                        book.setSize((rs.getInt("size")));
-                        return book;
-                    }
+                parameterSource, (rs, rowNum) -> {
+                    Book book = new Book();
+                    book.setAuthor((rs.getString("author")));
+                    book.setTitle((rs.getString("title")));
+                    book.setSize((rs.getInt("size")));
+                    return book;
                 });
     }
 

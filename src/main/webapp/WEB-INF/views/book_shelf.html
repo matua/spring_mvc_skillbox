@@ -28,7 +28,7 @@
             border-bottom: 1px solid #ddd;
         }
 
-        td.error {
+        p.error {
             color: red;
         }
     </style>
@@ -51,9 +51,11 @@
                 <td>
                     <input type="submit" value="save">
                 </td>
-                <td class="error" th:if="${#fields.hasErrors()}">field value must be digit and less than 4 signs</td>
             </tr>
         </table>
+        <p class="error" th:if="${#fields.hasErrors('author')}">Author cannot be empty</p>
+        <p class="error" th:if="${#fields.hasErrors('title')}">Title cannot be empty</p>
+        <p class="error" th:if="${#fields.hasErrors('size')}">Size cannot be empty and must be more than 1 and not more than 4 digits</p>
     </form>
 
     <form method="post" th:action="@{/books/uploadFile}" enctype="multipart/form-data">
@@ -78,11 +80,11 @@
                 <td>
                     <input type="submit" value="Remove">
                 </td>
-                <td class="error" th:if="${#fields.hasErrors()}">
-                    <p>Wrong id or not found</p>
+                <td >
                 </td>
             </tr>
         </table>
+        <p class="error" th:if="${#fields.hasErrors()}">Wrong id or not found</p>
     </form>
 
     <form method="post" th:action="@{/books/removeByFilter}">
