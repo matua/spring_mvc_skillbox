@@ -35,6 +35,21 @@
 </head>
 <body>
 <div id="root_container">
+
+    <form method="post" th:action="@{/books/uploadFile}" enctype="multipart/form-data">
+        <table>
+            <tr>
+                <td>
+                    <input type="file" name="file"/>
+                </td>
+                <td>
+                    <input type="submit" value="Upload"/>
+                </td>
+            </tr>
+        </table>
+        <p class="error" th:if="${fileNotFoundMessage != null}">Please select file to upload</p>
+    </form>
+
     <form method="post" th:action="@{/books/save}" th:object="${book}">
         <table>
             <tr>
@@ -56,19 +71,6 @@
         <p class="error" th:if="${#fields.hasErrors('author')}">Author cannot be empty</p>
         <p class="error" th:if="${#fields.hasErrors('title')}">Title cannot be empty</p>
         <p class="error" th:if="${#fields.hasErrors('size')}">Size cannot be empty and must be more than 1 and not more than 4 digits</p>
-    </form>
-
-    <form method="post" th:action="@{/books/uploadFile}" enctype="multipart/form-data">
-        <table>
-            <tr>
-                <td>
-                    <input type="file" name="file"/>
-                </td>
-                <td>
-                    <input type="submit" value="Upload"/>
-                </td>
-            </tr>
-        </table>
     </form>
 
     <form method="post" th:action="@{/books/remove}" th:object="${bookIdToRemove}">
