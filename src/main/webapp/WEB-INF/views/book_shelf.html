@@ -70,7 +70,8 @@
         </table>
         <p class="error" th:if="${#fields.hasErrors('author')}">Author cannot be empty</p>
         <p class="error" th:if="${#fields.hasErrors('title')}">Title cannot be empty</p>
-        <p class="error" th:if="${#fields.hasErrors('size')}">Size cannot be empty and must be more than 1 and not more than 4 digits</p>
+        <p class="error" th:if="${#fields.hasErrors('size')}">Size cannot be empty and must be more than 1 and not more
+            than 4 digits</p>
     </form>
 
     <form method="post" th:action="@{/books/remove}" th:object="${bookIdToRemove}">
@@ -82,11 +83,14 @@
                 <td>
                     <input type="submit" value="Remove">
                 </td>
-                <td >
+                <td>
                 </td>
             </tr>
         </table>
-        <p class="error" th:if="${#fields.hasErrors()}">Wrong id or not found</p>
+        <p class="error" th:if="${#fields.hasErrors()}">ID cannot be empty and must be more than 1 and not more than 30
+            digits ONLY</p>
+        <p class="error" th:if="${idNotFoundMessage != null}">ID <span th:text="${bookIdToRemoveData}"></span> is not found
+        </p>
     </form>
 
     <form method="post" th:action="@{/books/removeByFilter}">

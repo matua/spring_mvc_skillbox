@@ -1,6 +1,7 @@
 package org.example.web.controllers;
 
 import org.apache.log4j.Logger;
+import org.example.app.exceptions.IdNotFoundException;
 import org.example.app.services.BookService;
 import org.example.web.dto.Book;
 import org.example.web.dto.BookIdToRemove;
@@ -110,8 +111,18 @@ public class BookShelfController {
     @ExceptionHandler(FileNotFoundException.class)
     public String fileUpload(Model model, FileNotFoundException exception) {
         model.addAttribute("fileNotFoundMessage", exception.getMessage());
-        model.addAttribute("book", new Book());
         model.addAttribute("bookIdToRemove", new BookIdToRemove());
+        model.addAttribute("book", new Book());
+        model.addAttribute("bookList", bookService.getAllBooks());
+        return "book_shelf";
+    }
+
+    @ExceptionHandler(IdNotFoundException.class)
+    public String idNotFound(Model model, IdNotFoundException exception) {
+        model.addAttribute("idNotFoundMessage", exception.getMessage());
+        model.addAttribute("bookIdToRemove", new BookIdToRemove());
+        model.addAttribute("bookIdToRemoveData", exception.getIdToRemove());
+        model.addAttribute("book", new Book());
         model.addAttribute("bookList", bookService.getAllBooks());
         return "book_shelf";
     }

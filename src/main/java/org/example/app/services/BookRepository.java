@@ -1,6 +1,7 @@
 package org.example.app.services;
 
 import org.apache.log4j.Logger;
+import org.example.app.exceptions.IdNotFoundException;
 import org.example.web.dto.Book;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,11 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
     public boolean removeItemById(Integer bookIdToRemove) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("id", bookIdToRemove);
-        jdbcTemplate.update("DELETE FROM BOOKS WHERE id = :id", parameterSource);
+        int update = jdbcTemplate.update("DELETE FROM BOOKS WHERE id = :id", parameterSource);
+        if (update == 0) {
+            logger.info("Book id does not exist");
+            throw new IdNotFoundException(bookIdToRemove, "Id NOT found");
+        }
         logger.info("remove book completed");
         return true;
     }
