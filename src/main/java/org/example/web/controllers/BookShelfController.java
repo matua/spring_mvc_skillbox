@@ -67,15 +67,6 @@ public class BookShelfController {
         }
     }
 
-//    @PostMapping("/removeByFilter")
-//    public String removeBookByFilter(
-//            @RequestParam String regAuthorToRemove,
-//            @RequestParam String regTitleToRemove,
-//            @RequestParam String regSizeToRemove) {
-//        bookService.removeBookByFilter(regAuthorToRemove, regTitleToRemove, regSizeToRemove);
-//        return "redirect:/books/shelf";
-//    }
-
     @PostMapping("/removeByFilter")
     public String removeBookByFilter(
             Model model,
@@ -96,6 +87,7 @@ public class BookShelfController {
             @RequestParam String regTitleToFilter,
             @RequestParam String regSizeToFilter) {
         model.addAttribute("book", new Book());
+        model.addAttribute("bookIdToRemove", new BookIdToRemove());
         model.addAttribute("bookList", bookService.filter(regAuthorToFilter, regTitleToFilter, regSizeToFilter));
         return "book_shelf";
     }

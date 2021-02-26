@@ -93,7 +93,6 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
     @Override
     public List<Book> filter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
         logger.info("filtering of books completed");
-        Integer regSizeToRemoveToInt = null;
 
         if (regAuthorToRemove.isEmpty()) {
             regAuthorToRemove = "%";
@@ -101,14 +100,16 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
         if (regTitleToRemove.isEmpty()) {
             regTitleToRemove = "%";
         }
-        if (regSizeToRemove.isEmpty()) {
-            regSizeToRemoveToInt = Integer.parseInt(regSizeToRemove);
-        }
 
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("author", regAuthorToRemove);
         parameterSource.addValue("title", regTitleToRemove);
-        parameterSource.addValue("size", regSizeToRemoveToInt);
+
+        if (regSizeToRemove.isEmpty()) {
+            parameterSource.addValue("size", "%");
+        } else {
+            parameterSource.addValue("size", Integer.parseInt(regSizeToRemove));
+        }
 
         return jdbcTemplate.query("SELECT * FROM BOOKS" +
                         " WHERE AUTHOR LIKE :author AND TITLE LIKE :title AND SIZE LIKE :size",
