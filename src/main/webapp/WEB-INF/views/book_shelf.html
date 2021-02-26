@@ -89,12 +89,13 @@
         </table>
         <p class="error" th:if="${#fields.hasErrors()}">ID cannot be empty and must be more than 1 and not more than 30
             digits ONLY</p>
-        <p class="error" th:if="${idNotFoundMessage != null}">ID <span th:text="${bookIdToRemoveData}"></span> is not found
+        <p class="error" th:if="${idNotFoundMessage != null}">ID <span th:text="${bookIdToRemoveData}"></span> is not
+            found
         </p>
     </form>
 
     <form method="post" th:action="@{/books/removeByFilter}" th:object="${bookToRemoveByFilter}">
-    <table>
+        <table>
             <tr>
                 <td>
                     <input placeholder="author" th:name="regAuthorToRemove" type="text">
@@ -146,6 +147,7 @@
         </tr>
         <a th:href="@{'/books/shelf'}">Reset Filter</a>
     </table>
+    <p><a th:href="@{'/uploadedFiles'}">List Uploaded Files</a></p>
     <a th:href="@{'/login'}">Log out</a>
 </div>
 </body>

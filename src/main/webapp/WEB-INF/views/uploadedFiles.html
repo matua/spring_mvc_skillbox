@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+    <style>
+        #root_container {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #files {
+            width: 50%;
+            border-collapse: collapse;
+        }
+
+        table {
+            margin: 25px;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        th, td {
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+<div id="root_container">
+    <table id="files">
+        <tr>
+            <th>File Name</th>
+        </tr>
+        <tr th:each="file : ${files}">
+            <td><a th:href="@{'/uploadedFiles/download/' + ${file.getName()}}"><span th:text="${file.getName()}"></span></a></td>
+
+        </tr>
+    </table>
+    <a th:href="@{'/books/shelf'}">Go back to main page</a>
+</div>
+</body>
+</html>
