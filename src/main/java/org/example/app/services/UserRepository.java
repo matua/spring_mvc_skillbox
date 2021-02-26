@@ -42,8 +42,8 @@ public class UserRepository implements ProjectRepository<User> {
     }
 
     @Override
-    public boolean removeItemByFilter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
-        return false; /*TODO*/
+    public Integer removeItemByFilter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
+        return 1; /*TODO*/
     }
 
     @Override

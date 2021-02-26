@@ -19,7 +19,6 @@ import java.util.List;
 public class BookRepository implements ProjectRepository<Book>, ApplicationContextAware {
 
     private final Logger logger = Logger.getLogger(BookRepository.class);
-    //    private final List<Book> repo = new ArrayList<>();
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private ApplicationContext context;
 
@@ -28,17 +27,6 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
         this.jdbcTemplate = jdbcTemplate;
     }
 
-//    {
-//        repo.add(new Book(3849287, "Robert Carmen", "Spoken English: Flourish Your Language", 225));
-//        repo.add(new Book(3672634, "Robert Carmen", "Some interesting book", 345));
-//        repo.add(new Book(9238748, "Robert Carmen", "Some good and wondreful book", 500));
-//        repo.add(new Book(4728374, "Jonathan Matua", "The book of my son", 100));
-//        repo.add(new Book(5957873, "Jonathan Matua", "The book of my son 2", 225));
-//        repo.add(new Book(7498374, "Jonathan Matua", "Readings", 110));
-//        repo.add(new Book(2387463, "Jane Herberth", "Spoken English: Flourish Your Language", 231));
-//        repo.add(new Book(2349873, "Todeush Kostyushko", "The relevance of anthropological research", 1201));
-//
-//    }
 
     @Override
     public List<Book> retreiveAll() {
@@ -77,33 +65,29 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
     }
 
     @Override
-    public boolean removeItemByFilter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
-
-        List<Book> toRemove = new ArrayList<>();
+    public Integer removeItemByFilter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
+        logger.info("removing of books completed");
 
         if (regAuthorToRemove.isEmpty()) {
-            regAuthorToRemove = ".*";
+            regAuthorToRemove = "%";
         }
         if (regTitleToRemove.isEmpty()) {
-            regTitleToRemove = ".*";
+            regTitleToRemove = "%";
         }
+
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("author", regAuthorToRemove);
+        parameterSource.addValue("title", regTitleToRemove);
+
         if (regSizeToRemove.isEmpty()) {
-            regSizeToRemove = ".*";
+            parameterSource.addValue("size", "%");
+        } else {
+            parameterSource.addValue("size", Integer.parseInt(regSizeToRemove));
         }
 
-        boolean remove = false;
-//        for (Book book : repo) {
-//            if (Pattern.matches(regAuthorToRemove, book.getAuthor()) &&
-//                    Pattern.matches(regTitleToRemove, book.getTitle()) &&
-//                    Pattern.matches(regSizeToRemove, book.getSize().toString())) {
-//                toRemove.add(book);
-//                remove = true;
-//            }
-//        }
-
-//        repo.removeAll(toRemove);
-//        logger.info("filter removal book completed: " + book);
-        return remove;
+        return jdbcTemplate.update("DELETE FROM BOOKS" +
+                        " WHERE AUTHOR LIKE :author AND TITLE LIKE :title AND SIZE LIKE :size",
+                parameterSource);
     }
 
     @Override
@@ -118,7 +102,6 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
             regTitleToRemove = "%";
         }
         if (regSizeToRemove.isEmpty()) {
-        } else {
             regSizeToRemoveToInt = Integer.parseInt(regSizeToRemove);
         }
 
@@ -128,7 +111,7 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
         parameterSource.addValue("size", regSizeToRemoveToInt);
 
         return jdbcTemplate.query("SELECT * FROM BOOKS" +
-                        " WHERE AUTHOR LIKE :author OR TITLE LIKE :title OR SIZE LIKE :size",
+                        " WHERE AUTHOR LIKE :author AND TITLE LIKE :title AND SIZE LIKE :size",
                 parameterSource, (rs, rowNum) -> {
                     Book book = new Book();
                     book.setAuthor((rs.getString("author")));

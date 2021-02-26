@@ -93,8 +93,8 @@
         </p>
     </form>
 
-    <form method="post" th:action="@{/books/removeByFilter}">
-        <table>
+    <form method="post" th:action="@{/books/removeByFilter}" th:object="${bookToRemoveByFilter}">
+    <table>
             <tr>
                 <td>
                     <input placeholder="author" th:name="regAuthorToRemove" type="text">
