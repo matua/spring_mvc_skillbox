@@ -98,13 +98,13 @@
         <table>
             <tr>
                 <td>
-                    <input placeholder="author" th:name="regAuthorToRemove" type="text">
+                    <input placeholder="author" th:field="*{author}" type="text">
                 </td>
                 <td>
-                    <input placeholder="title" th:name="regTitleToRemove" type="text">
+                    <input placeholder="title" th:field="*{title}" type="text">
                 </td>
                 <td>
-                    <input placeholder="size" th:name="regSizeToRemove" type="text">
+                    <input placeholder="size" th:field="*{size}" type="text">
                 </td>
                 <td>
                     <input type="submit" value="Remove by filter">
@@ -113,6 +113,8 @@
         </table>
         <p class="error" th:if="${#fields.hasErrors('size')}" th:errors="*{size}">Size cannot be empty and must be more than 1 and not more
             than 4 digits</p>    </form>
+    <p class="error" th:if="${bookNotFoundMessage != null}">Not book found with such parameters</p>
+    <p class="error" th:if="${cantDeleteAllBooks != null}">You cannot delete all books at once</p>
 
     <form method="post" th:action="@{/books/filter}">
         <table>

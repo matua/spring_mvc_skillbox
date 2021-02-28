@@ -1,6 +1,8 @@
 package org.example.web.controllers;
 
 import org.apache.log4j.Logger;
+import org.example.app.exceptions.BookNotFoundException;
+import org.example.app.exceptions.DangerousAllDeleteException;
 import org.example.app.exceptions.IdNotFoundException;
 import org.example.app.services.BookService;
 import org.example.web.dto.Book;
@@ -13,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.validation.Valid;
 import java.io.*;
@@ -22,6 +26,14 @@ import java.util.List;
 @RequestMapping(value = "/books")
 @Scope("singleton")
 public class BookShelfController {
+    private final Logger logger = Logger.getLogger(BookShelfController.class);
+    private final BookService bookService;
+
+    @Autowired
+    public BookShelfController(BookService bookService) {
+        this.bookService = bookService;
+    }
+
     @ModelAttribute("book")
     public Book getBook() {
         return new Book();
@@ -42,14 +54,6 @@ public class BookShelfController {
         return bookService.getAllBooks();
     }
 
-    private final Logger logger = Logger.getLogger(BookShelfController.class);
-    private final BookService bookService;
-
-    @Autowired
-    public BookShelfController(BookService bookService) {
-        this.bookService = bookService;
-    }
-
     @GetMapping("/shelf")
     public String books(Model model) {
         logger.info("got book shelf");
@@ -66,11 +70,27 @@ public class BookShelfController {
             logger.info("current repository size: " + bookService.getAllBooks().size());
             return "redirect:/books/shelf";
         }
+    }
 
+    @PostMapping("/removeByFilter")
+    public String removeBookByFilter(
+            @Valid BookFilter bookFilter,
+            BindingResult bindingResult,
+            Model model,
+            @RequestParam String author,
+            @RequestParam String title,
+            @RequestParam String size) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("bookFilter", bookFilter);
+            return "book_shelf";
+        } else {
+            bookService.removeBookByFilter(author, title, size);
+            return "redirect:/books/shelf";
+        }
     }
 
     @PostMapping("/remove")
-    public String removeBook(@Valid BookIdToRemove bookIdToRemove, BindingResult bindingResult, Model model) {
+    public String removeBook(@Valid BookIdToRemove bookIdToRemove, BindingResult bindingResult) {
         logger.info("bookIdToRemove received: " + bookIdToRemove.getId());
         logger.info("Errors???: " + bindingResult.getAllErrors());
         if (bindingResult.hasErrors()) {
@@ -79,23 +99,6 @@ public class BookShelfController {
             bookService.removeBookById(bookIdToRemove.getId());
             return "redirect:/books/shelf";
         }
-    }
-
-    @PostMapping("/removeByFilter")
-    public String removeBookByFilter(
-            @Valid BookFilter bookFilter,
-            BindingResult bindingResult,
-            Model model,
-            @RequestParam String regAuthorToRemove,
-            @RequestParam String regTitleToRemove,
-            @RequestParam String regSizeToRemove) {
-        model.addAttribute("bookFilter", bookFilter);
-        if (!bindingResult.hasErrors()) {
-            model.addAttribute("bookFilter", bookFilter);
-            bookService.removeBookByFilter(regAuthorToRemove, regTitleToRemove, regSizeToRemove);
-            return "redirect:/books/shelf";
-        }
-        return "book_shelf";
     }
 
     @PostMapping("/filter")
@@ -130,15 +133,35 @@ public class BookShelfController {
     }
 
     @ExceptionHandler(FileNotFoundException.class)
-    public String fileUpload(Model model, FileNotFoundException exception) {
-        model.addAttribute("fileNotFoundMessage", exception.getMessage());
-        return "book_shelf";
+    public RedirectView fileUpload(FileNotFoundException exception, RedirectAttributes redir) {
+        logger.info("File not found intercepted");
+        RedirectView redirectView = new RedirectView("/books/shelf", true);
+        redir.addFlashAttribute("fileNotFoundMessage", exception);
+        return redirectView;
     }
 
     @ExceptionHandler(IdNotFoundException.class)
-    public String idNotFound(Model model, IdNotFoundException exception) {
-        model.addAttribute("idNotFoundMessage", exception.getMessage());
-        model.addAttribute("bookIdToRemoveData", exception.getIdToRemove());
-        return "book_shelf";
+    public RedirectView idNotFound(IdNotFoundException exception, RedirectAttributes redir) {
+        logger.info("Wrong Id Exception intercepted");
+        RedirectView redirectView = new RedirectView("/books/shelf", true);
+        redir.addFlashAttribute("idNotFoundMessage", exception.getMessage());
+        redir.addFlashAttribute("bookIdToRemoveData", exception.getIdToRemove());
+        return redirectView;
+    }
+
+    @ExceptionHandler(BookNotFoundException.class)
+    public RedirectView bookNotFound(BookNotFoundException exception, RedirectAttributes redir) {
+        logger.info("Wrong Book Exception intercepted");
+        RedirectView redirectView = new RedirectView("/books/shelf", true);
+        redir.addFlashAttribute("bookNotFoundMessage", exception.getMessage());
+        return redirectView;
+    }
+
+    @ExceptionHandler(DangerousAllDeleteException.class)
+    public RedirectView cantDeleteAllBooks(DangerousAllDeleteException exception, RedirectAttributes redir) {
+        logger.info("All books deleted prevented");
+        RedirectView redirectView = new RedirectView("/books/shelf", true);
+        redir.addFlashAttribute("cantDeleteAllBooks", exception.getMessage());
+        return redirectView;
     }
 }

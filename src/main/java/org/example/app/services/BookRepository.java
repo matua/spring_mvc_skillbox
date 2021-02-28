@@ -1,6 +1,8 @@
 package org.example.app.services;
 
 import org.apache.log4j.Logger;
+import org.example.app.exceptions.BookNotFoundException;
+import org.example.app.exceptions.DangerousAllDeleteException;
 import org.example.app.exceptions.IdNotFoundException;
 import org.example.web.dto.Book;
 import org.springframework.beans.BeansException;
@@ -55,8 +57,8 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
     public boolean removeItemById(Integer bookIdToRemove) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         parameterSource.addValue("id", bookIdToRemove);
-        int update = jdbcTemplate.update("DELETE FROM BOOKS WHERE id = :id", parameterSource);
-        if (update == 0) {
+        int updateResult = jdbcTemplate.update("DELETE FROM BOOKS WHERE id = :id", parameterSource);
+        if (updateResult == 0) {
             logger.info("Book id does not exist");
             throw new IdNotFoundException(bookIdToRemove, "Id NOT found");
         }
@@ -66,34 +68,50 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
 
     @Override
     public Integer removeItemByFilter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
-        logger.info("removing of books completed");
-
-        if (regAuthorToRemove.isEmpty()) {
-            regAuthorToRemove = "%";
-        }
-        if (regTitleToRemove.isEmpty()) {
-            regTitleToRemove = "%";
+        if (regAuthorToRemove.isEmpty() && regTitleToRemove.isEmpty() && regSizeToRemove.isEmpty()){
+            throw new DangerousAllDeleteException("If we permitted this, you would delete all books from the library.");
         }
 
-        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-        parameterSource.addValue("author", regAuthorToRemove);
-        parameterSource.addValue("title", regTitleToRemove);
+        MapSqlParameterSource parameterSource = setParameters(regAuthorToRemove, regTitleToRemove, regSizeToRemove);
 
-        if (regSizeToRemove.isEmpty()) {
-            parameterSource.addValue("size", "%");
-        } else {
-            parameterSource.addValue("size", Integer.parseInt(regSizeToRemove));
-        }
-
-        return jdbcTemplate.update("DELETE FROM BOOKS" +
+        int updateResult = jdbcTemplate.update("DELETE FROM BOOKS" +
                         " WHERE AUTHOR LIKE :author AND TITLE LIKE :title AND SIZE LIKE :size",
                 parameterSource);
+        if (updateResult == 0) {
+            logger.info("Such book(s) do(es) not exist(s)");
+            int regSizeToRemoveInt = 0;
+            if (!regSizeToRemove.isEmpty()) {
+                regSizeToRemoveInt = Integer.parseInt(regSizeToRemove);
+            }
+            throw new BookNotFoundException(
+                    new Book(null, regAuthorToRemove, regTitleToRemove, regSizeToRemoveInt),
+                    "Id NOT found");
+        }
+
+        logger.info("removing of books completed");
+
+        return updateResult;
     }
 
     @Override
     public List<Book> filter(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
         logger.info("filtering of books completed");
 
+        MapSqlParameterSource parameterSource = setParameters(regAuthorToRemove, regTitleToRemove, regSizeToRemove);
+
+        return jdbcTemplate.query("SELECT * FROM BOOKS" +
+                        " WHERE AUTHOR LIKE :author AND TITLE LIKE :title AND SIZE LIKE :size",
+                parameterSource, (rs, rowNum) -> {
+                    Book book = new Book();
+                    book.setId((rs.getInt("id")));
+                    book.setAuthor((rs.getString("author")));
+                    book.setTitle((rs.getString("title")));
+                    book.setSize((rs.getInt("size")));
+                    return book;
+                });
+    }
+
+    private MapSqlParameterSource setParameters(String regAuthorToRemove, String regTitleToRemove, String regSizeToRemove) {
         if (regAuthorToRemove.isEmpty()) {
             regAuthorToRemove = "%";
         }
@@ -110,16 +128,7 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
         } else {
             parameterSource.addValue("size", Integer.parseInt(regSizeToRemove));
         }
-
-        return jdbcTemplate.query("SELECT * FROM BOOKS" +
-                        " WHERE AUTHOR LIKE :author AND TITLE LIKE :title AND SIZE LIKE :size",
-                parameterSource, (rs, rowNum) -> {
-                    Book book = new Book();
-                    book.setAuthor((rs.getString("author")));
-                    book.setTitle((rs.getString("title")));
-                    book.setSize((rs.getInt("size")));
-                    return book;
-                });
+        return parameterSource;
     }
 
 
