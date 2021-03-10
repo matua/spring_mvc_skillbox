@@ -48,6 +48,7 @@
             </tr>
         </table>
         <p class="error" th:if="${fileNotFoundMessage != null}">Please select file to upload</p>
+        <p class="error" th:if="${fileTooBigToUpload != null}">File cannot be bigger than 1,000,000 bytes</p>
     </form>
 
     <form method="post" th:action="@{/books/save}" th:object="${book}">

@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 @Controller
 @RequestMapping(value = "/uploadedFiles")
@@ -35,12 +32,6 @@ public class UploadedFilesController {
     public void downloadFile(HttpServletResponse response,
                              @PathVariable String fileName) throws IOException {
         logger.info("Trying to download file: " + fileName);
-
-        String rootPath = System.getProperty("catalina.home");
-        File file = new File(rootPath + File.separator + "external_uploads" + File.separator + fileName);
-
-        InputStream is = new FileInputStream(file);
-        org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
-        response.flushBuffer();
+        uploadedFilesService.fileDownload(fileName, response);
     }
 }
