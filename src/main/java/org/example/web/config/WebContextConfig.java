@@ -79,7 +79,7 @@ public class WebContextConfig implements WebMvcConfigurer {
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(5_000_000);
+//        multipartResolver.setMaxUploadSize(1_000_000);
         return multipartResolver;
     }
 }

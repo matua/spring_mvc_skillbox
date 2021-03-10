@@ -3,6 +3,7 @@ package org.example.web.controllers;
 import org.apache.log4j.Logger;
 import org.example.app.exceptions.BookNotFoundException;
 import org.example.app.exceptions.DangerousAllDeleteException;
+import org.example.app.exceptions.FileTooBigToUploadException;
 import org.example.app.exceptions.IdNotFoundException;
 import org.example.app.services.BookService;
 import org.example.web.dto.Book;
@@ -117,6 +118,12 @@ public class BookShelfController {
         String name = file.getOriginalFilename();
         byte[] bytes = file.getBytes();
 
+        long fileSize = bytes.length;
+
+        if (fileSize >= 1_000_000) {
+            throw new FileTooBigToUploadException(fileSize, "File is bigger than 1,000,000 bytes and cannot be uploaded");
+        }
+
         String rootPath = System.getProperty("catalina.home");
         File dir = new File(rootPath + File.separator + "external_uploads");
         if (!dir.exists()) {
@@ -162,6 +169,14 @@ public class BookShelfController {
         logger.info("All books deleted prevented");
         RedirectView redirectView = new RedirectView("/books/shelf", true);
         redir.addFlashAttribute("cantDeleteAllBooks", exception.getMessage());
+        return redirectView;
+    }
+
+    @ExceptionHandler(FileTooBigToUploadException.class)
+    public RedirectView fileToBigToUpload(FileTooBigToUploadException exception, RedirectAttributes redir) {
+        logger.info("File too big to upload");
+        RedirectView redirectView = new RedirectView("/books/shelf", true);
+        redir.addFlashAttribute("fileTooBigToUpload", exception.getMessage());
         return redirectView;
     }
 }
